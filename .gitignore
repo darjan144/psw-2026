@@ -6,6 +6,10 @@
 # dotenv files
 .env
 
+# Claude Code local settings and MCP config (contains secrets)
+.claude/settings.local.json
+.mcp.json
+
 # User-specific files
 *.rsuser
 *.suo

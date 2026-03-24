@@ -1,0 +1,17 @@
+<nav class="navbar">
+  <a routerLink="/" class="brand">{{ title }}</a>
+  <div class="nav-links">
+    @if (isLoggedIn) {
+      <a routerLink="/tours">Tours</a>
+      <a routerLink="/cart">Cart</a>
+      <button (click)="logout()">Logout</button>
+    } @else {
+      <a routerLink="/login">Login</a>
+      <a routerLink="/register">Register</a>
+    }
+  </div>
+</nav>
+
+<main class="content">
+  <router-outlet />
+</main>

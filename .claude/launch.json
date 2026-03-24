@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "api",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "TourManagement.API/TourManagement.API"],
+      "port": 5106
+    },
+    {
+      "name": "client",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["node_modules/@angular/cli/bin/ng.js", "serve"],
+      "port": 4200,
+      "cwd": "TourManagement.Client"
+    }
+  ]
+}
