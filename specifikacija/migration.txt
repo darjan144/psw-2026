@@ -1,0 +1,5 @@
+cd TourManagement.API
+dotnet ef migrations add <Name> --project TourManagement.Infrastructure --startup-project TourManagement.API
+
+dotnet ef database update --project TourManagement.Infrastructure --startup-project TourManagement.API
+

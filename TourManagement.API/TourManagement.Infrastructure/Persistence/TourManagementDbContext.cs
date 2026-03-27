@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TourManagement.Domain.Entities;
 
 namespace TourManagement.Infrastructure.Persistence;
 
@@ -8,6 +9,8 @@ public class TourManagementDbContext : DbContext
         : base(options)
     {
     }
+
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
