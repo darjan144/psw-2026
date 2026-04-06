@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using TourManagement.Domain.Entities;
+using TourManagement.Domain.Interfaces;
 
 namespace TourManagement.Infrastructure.Persistence;
 
-public class TourManagementDbContext : DbContext
+public class TourManagementDbContext : DbContext, IUnitOfWork
 {
     public TourManagementDbContext(DbContextOptions<TourManagementDbContext> options)
         : base(options)
