@@ -23,9 +23,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.Role).HasConversion<string>().HasMaxLength(20);
 
-        // EF Core 8 supports primitive collections natively (stored as jsonb in PostgreSQL)
-        builder.Property(u => u.Interests)
-            .HasField("_interests")
+        builder.Property<List<Interest>>("_interests")
+            .HasColumnName("Interests")
             .UsePropertyAccessMode(PropertyAccessMode.Field);
 
         builder.Ignore(u => u.DomainEvents);
