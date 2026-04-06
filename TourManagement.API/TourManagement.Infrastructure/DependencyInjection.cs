@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<ITourPurchaseRepository, TourPurchaseRepository>();
 
         services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
 
         return services;
     }
