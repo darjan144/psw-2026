@@ -46,6 +46,12 @@ public class TourRepository : ITourRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<bool> HasTourOnDateAsync(long guideId, DateTime date, CancellationToken cancellationToken = default)
+    {
+        return await _context.Tours
+            .AnyAsync(t => t.GuideId == guideId && t.ScheduledDate.Date == date.Date && t.Status != TourStatus.Archived, cancellationToken);
+    }
+
     public async Task AddAsync(Tour tour, CancellationToken cancellationToken = default)
     {
         await _context.Tours.AddAsync(tour, cancellationToken);

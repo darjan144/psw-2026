@@ -9,6 +9,7 @@ public interface ITourRepository
     Task<List<Tour>> GetByGuideIdAsync(long guideId, CancellationToken cancellationToken = default);
     Task<List<Tour>> GetPublishedAsync(CancellationToken cancellationToken = default);
     Task<List<Tour>> GetSeekingSubstituteAsync(CancellationToken cancellationToken = default);
+    Task<bool> HasTourOnDateAsync(long guideId, DateTime date, CancellationToken cancellationToken = default);
     Task AddAsync(Tour tour, CancellationToken cancellationToken = default);
     void Update(Tour tour);
 }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TourManagement.Application.Services;
 using TourManagement.Domain.Interfaces;
 using TourManagement.Infrastructure.Authentication;
+using TourManagement.Infrastructure.BackgroundServices;
 using TourManagement.Infrastructure.Email;
 using TourManagement.Infrastructure.Persistence;
 using TourManagement.Infrastructure.Repositories;
@@ -29,6 +30,9 @@ public static class DependencyInjection
         services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IEmailService, SmtpEmailService>();
+
+        services.AddScoped<TourCancellationProcessor>();
+        services.AddHostedService<TourCancellationBackgroundService>();
 
         return services;
     }
