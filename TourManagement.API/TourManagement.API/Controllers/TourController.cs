@@ -48,6 +48,15 @@ public class TourController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("published")]
+    [AllowAnonymous]
+    public async Task<ActionResult<List<TourDto>>> GetPublished(
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetPublishedToursQuery(), cancellationToken);
+        return Ok(result);
+    }
+
     [HttpGet("my")]
     public async Task<ActionResult<List<TourDto>>> GetMyTours(
         [FromQuery] long guideId,
