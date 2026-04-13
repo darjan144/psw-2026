@@ -14,4 +14,15 @@ public static class UserMappingExtensions
             user.BlockCount
         );
     }
+
+    public static ProfileDto ToProfileDto(this User user)
+    {
+        return new ProfileDto(
+            user.Id,
+            user.Username,
+            user.Email,
+            user.Interests.Select(i => i.ToString()).ToList(),
+            user.RecommendationsEnabled
+        );
+    }
 }
