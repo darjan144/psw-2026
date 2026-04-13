@@ -28,7 +28,7 @@ public class Problem : Entity
         Status = ProblemStatus.Pending;
         CreatedAt = DateTime.UtcNow;
 
-        AddDomainEvent(new ProblemCreatedEvent(Id, tourId, touristId));
+        AddDomainEvent(new ProblemCreatedEvent(Id, tourId, touristId, title));
     }
 
     public void Resolve()

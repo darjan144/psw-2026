@@ -36,6 +36,13 @@ public class SmtpEmailService : IEmailService
         await SendEmailAsync(toEmail, $"Preporuka ture: {tourName}", body, cancellationToken);
     }
 
+    public async Task SendProblemNotificationAsync(string toEmail, string guideName, string problemTitle, string tourName, CancellationToken cancellationToken = default)
+    {
+        var body = $"Pozdrav {guideName},\n\nNovi problem je prijavljen na vašoj turi \"{tourName}\".\n\nNaziv problema: {problemTitle}\n\nMolimo vas da pregledate i rešite problem.";
+
+        await SendEmailAsync(toEmail, $"Novi problem na turi: {tourName}", body, cancellationToken);
+    }
+
     private async Task SendEmailAsync(string toEmail, string subject, string body, CancellationToken cancellationToken)
     {
         var message = new MimeMessage();
