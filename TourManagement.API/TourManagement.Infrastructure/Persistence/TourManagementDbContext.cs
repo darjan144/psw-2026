@@ -1,3 +1,4 @@
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TourManagement.Domain.Entities;
 using TourManagement.Domain.Interfaces;
@@ -6,9 +7,12 @@ namespace TourManagement.Infrastructure.Persistence;
 
 public class TourManagementDbContext : DbContext, IUnitOfWork
 {
-    public TourManagementDbContext(DbContextOptions<TourManagementDbContext> options)
+    private readonly IMediator _mediator;
+
+    public TourManagementDbContext(DbContextOptions<TourManagementDbContext> options, IMediator mediator)
         : base(options)
     {
+        _mediator = mediator;
     }
 
     public DbSet<User> Users => Set<User>();
@@ -24,5 +28,25 @@ public class TourManagementDbContext : DbContext, IUnitOfWork
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(TourManagementDbContext).Assembly);
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var result = await base.SaveChangesAsync(cancellationToken);
+
+        var entitiesWithEvents = ChangeTracker.Entries<Entity>()
+            .Where(e => e.Entity.DomainEvents.Any())
+            .Select(e => e.Entity)
+            .ToList();
+
+        var domainEvents = entitiesWithEvents.SelectMany(e => e.DomainEvents).ToList();
+
+        foreach (var entity in entitiesWithEvents)
+            entity.ClearDomainEvents();
+
+        foreach (var domainEvent in domainEvents)
+            await _mediator.Publish(domainEvent, cancellationToken);
+
+        return result;
     }
 }

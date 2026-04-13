@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TourManagement.Domain.Entities;
+using TourManagement.Domain.Enums;
 using TourManagement.Domain.Interfaces;
 using TourManagement.Infrastructure.Persistence;
 
@@ -32,6 +33,13 @@ public class UserRepository : IUserRepository
     public async Task<List<User>> GetBlockedUsersAsync(CancellationToken cancellationToken = default)
     {
         return await _context.Users.Where(u => u.IsBlocked).ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<User>> GetTouristsWithInterestAsync(Interest interest, CancellationToken cancellationToken = default)
+    {
+        return await _context.Users
+            .Where(u => u.Role == UserRole.Tourist && u.RecommendationsEnabled && u.Interests.Contains(interest))
+            .ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(User user, CancellationToken cancellationToken = default)
