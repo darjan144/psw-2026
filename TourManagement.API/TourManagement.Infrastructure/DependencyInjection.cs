@@ -34,6 +34,9 @@ public static class DependencyInjection
         services.AddScoped<TourCancellationProcessor>();
         services.AddHostedService<TourCancellationBackgroundService>();
 
+        services.AddScoped<TourReminderProcessor>();
+        services.AddHostedService<TourReminderBackgroundService>();
+
         return services;
     }
 }
