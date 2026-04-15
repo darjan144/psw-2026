@@ -20,12 +20,12 @@ public class ProblemConfiguration : IEntityTypeConfiguration<Problem>
         builder.Ignore(p => p.DomainEvents);
         builder.Ignore(p => p.Status);
 
-        builder.HasMany<ProblemStateEvent>("_events")
+        builder.HasMany(p => p.Events)
             .WithOne()
             .HasForeignKey(e => e.ProblemId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.Metadata.FindNavigation("_events")!
+        builder.Metadata.FindNavigation(nameof(Problem.Events))!
             .SetPropertyAccessMode(PropertyAccessMode.Field);
     }
 }

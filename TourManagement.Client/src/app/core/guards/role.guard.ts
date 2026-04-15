@@ -1,29 +1,22 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 
+import { AuthService } from '../services/auth.service';
+
 export const roleGuard =
   (...allowedRoles: string[]): CanActivateFn =>
   () => {
     const router = inject(Router);
-    const token = localStorage.getItem('token');
+    const auth = inject(AuthService);
 
-    if (!token) {
+    if (!auth.isLoggedIn()) {
       router.navigate(['/login']);
       return false;
     }
 
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const userRole =
-        payload[
-          'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
-        ] || payload['role'];
-
-      if (allowedRoles.includes(userRole)) {
-        return true;
-      }
-    } catch {
-      // Invalid token
+    const role = auth.role();
+    if (role && allowedRoles.includes(role)) {
+      return true;
     }
 
     router.navigate(['/']);

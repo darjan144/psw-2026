@@ -14,13 +14,16 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
+  id: number;
+  username: string;
+  role: UserRole;
   token: string;
 }
 
 export enum Interest {
   Nature = 'Nature',
   Art = 'Art',
-  Sports = 'Sports',
+  Sport = 'Sport',
   Shopping = 'Shopping',
   Food = 'Food',
 }
@@ -28,5 +31,5 @@ export enum Interest {
 export enum UserRole {
   Tourist = 'Tourist',
   Guide = 'Guide',
-  Admin = 'Admin',
+  Administrator = 'Administrator',
 }

@@ -1,17 +1,45 @@
-<nav class="navbar">
-  <a routerLink="/" class="brand">{{ title }}</a>
-  <div class="nav-links">
-    @if (isLoggedIn) {
-      <a routerLink="/tours">Tours</a>
-      <a routerLink="/cart">Cart</a>
-      <button (click)="logout()">Logout</button>
-    } @else {
-      <a routerLink="/login">Login</a>
-      <a routerLink="/register">Register</a>
-    }
+<nav class="border-b border-slate-200 bg-white">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+    <a routerLink="/" class="text-lg font-bold text-slate-900">{{ title }}</a>
+
+    <div class="flex items-center gap-4 text-sm">
+      @if (auth.isLoggedIn()) {
+        @if (auth.role() === Role.Tourist) {
+          <a routerLink="/tours" routerLinkActive="font-semibold text-sky-700" class="text-slate-700 hover:text-sky-700">Tours</a>
+          <a routerLink="/cart" routerLinkActive="font-semibold text-sky-700" class="text-slate-700 hover:text-sky-700">Cart</a>
+          <a routerLink="/profile" routerLinkActive="font-semibold text-sky-700" class="text-slate-700 hover:text-sky-700">Profile</a>
+          <a routerLink="/problems/mine" routerLinkActive="font-semibold text-sky-700" class="text-slate-700 hover:text-sky-700">My Problems</a>
+        }
+        @if (auth.role() === Role.Guide) {
+          <a routerLink="/guide/tours" routerLinkActive="font-semibold text-sky-700" class="text-slate-700 hover:text-sky-700">My Tours</a>
+          <a routerLink="/guide/substitutes" routerLinkActive="font-semibold text-sky-700" class="text-slate-700 hover:text-sky-700">Substitutes</a>
+          <a routerLink="/guide/problems" routerLinkActive="font-semibold text-sky-700" class="text-slate-700 hover:text-sky-700">Problems</a>
+        }
+        @if (auth.role() === Role.Administrator) {
+          <a routerLink="/admin/blocked-users" routerLinkActive="font-semibold text-sky-700" class="text-slate-700 hover:text-sky-700">Blocked Users</a>
+          <a routerLink="/admin/problems" routerLinkActive="font-semibold text-sky-700" class="text-slate-700 hover:text-sky-700">Problems</a>
+        }
+
+        <span class="hidden text-xs text-slate-500 sm:inline" data-testid="nav-user">
+          {{ auth.username() }} &middot; {{ auth.role() }}
+        </span>
+        <button
+          type="button"
+          (click)="logout()"
+          class="rounded-md border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100"
+        >
+          Logout
+        </button>
+      } @else {
+        <a routerLink="/login" routerLinkActive="font-semibold text-sky-700" class="text-slate-700 hover:text-sky-700">Login</a>
+        <a routerLink="/register" routerLinkActive="font-semibold text-sky-700" class="text-slate-700 hover:text-sky-700">Register</a>
+      }
+    </div>
   </div>
 </nav>
 
-<main class="content">
+<main class="mx-auto max-w-6xl px-4 py-6">
   <router-outlet />
 </main>
+
+<app-toast-container />

@@ -1,21 +1,26 @@
-import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+
+import { AuthService } from './core/services/auth.service';
+import { UserRole } from './core/models/user.model';
+import { ToastContainerComponent } from './shared/components/toast/toast-container.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink],
+  standalone: true,
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ToastContainerComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App {
-  title = 'Tour Management';
+  readonly title = 'Tour Management';
+  readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
 
-  get isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
-  }
+  readonly Role = UserRole;
 
   logout(): void {
-    localStorage.removeItem('token');
-    window.location.href = '/login';
+    this.auth.logout();
+    this.router.navigate(['/login']);
   }
 }

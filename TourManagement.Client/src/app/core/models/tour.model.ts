@@ -1,13 +1,17 @@
+import { Interest } from './user.model';
+
 export interface Tour {
   id: number;
   name: string;
   description: string;
   difficulty: TourDifficulty;
-  category: string;
+  category: Interest;
   price: number;
-  date: string;
   status: TourStatus;
+  scheduledDate: string;
+  publishedDate: string | null;
   guideId: number;
+  seekingSubstitute: boolean;
   keyPoints: KeyPoint[];
 }
 
@@ -18,7 +22,7 @@ export interface KeyPoint {
   latitude: number;
   longitude: number;
   imageUrl: string;
-  tourId: number;
+  order: number;
 }
 
 export enum TourDifficulty {
@@ -30,5 +34,5 @@ export enum TourDifficulty {
 export enum TourStatus {
   Draft = 'Draft',
   Published = 'Published',
-  Cancelled = 'Cancelled',
+  Archived = 'Archived',
 }

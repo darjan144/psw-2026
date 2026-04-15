@@ -17,14 +17,14 @@ public class ProblemRepository : IProblemRepository
     public async Task<Problem?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
         return await _context.Problems
-            .Include("_events")
+            .Include(p => p.Events)
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
     public async Task<List<Problem>> GetByTourIdAsync(long tourId, CancellationToken cancellationToken = default)
     {
         return await _context.Problems
-            .Include("_events")
+            .Include(p => p.Events)
             .AsSplitQuery()
             .Where(p => p.TourId == tourId)
             .ToListAsync(cancellationToken);
@@ -33,7 +33,7 @@ public class ProblemRepository : IProblemRepository
     public async Task<List<Problem>> GetByTouristIdAsync(long touristId, CancellationToken cancellationToken = default)
     {
         return await _context.Problems
-            .Include("_events")
+            .Include(p => p.Events)
             .AsSplitQuery()
             .Where(p => p.TouristId == touristId)
             .ToListAsync(cancellationToken);
