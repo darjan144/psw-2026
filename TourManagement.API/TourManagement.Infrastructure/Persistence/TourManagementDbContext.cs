@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TourManagement.Domain.Entities;
+using TourManagement.Domain.Entities.ProblemEvents;
 using TourManagement.Domain.Interfaces;
 
 namespace TourManagement.Infrastructure.Persistence;
@@ -23,6 +24,7 @@ public class TourManagementDbContext : DbContext, IUnitOfWork
     public DbSet<ShoppingCart> ShoppingCarts => Set<ShoppingCart>();
     public DbSet<CartItem> CartItems => Set<CartItem>();
     public DbSet<Problem> Problems => Set<Problem>();
+    public DbSet<ProblemStateEvent> ProblemStateEvents => Set<ProblemStateEvent>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

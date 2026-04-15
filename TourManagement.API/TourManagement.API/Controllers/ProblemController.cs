@@ -89,4 +89,14 @@ public class ProblemController : ControllerBase
         var result = await _mediator.Send(new GetProblemsByTourQuery(tourId), cancellationToken);
         return Ok(result);
     }
+
+    [HttpGet("{problemId}/history")]
+    [Authorize]
+    public async Task<ActionResult<List<ProblemEventDto>>> GetHistory(
+        long problemId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetProblemHistoryQuery(problemId), cancellationToken);
+        return Ok(result);
+    }
 }

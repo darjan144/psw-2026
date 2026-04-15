@@ -29,7 +29,7 @@ public class ResolveProblemCommandHandler : IRequestHandler<ResolveProblemComman
         if (tour.GuideId != command.GuideId)
             throw new InvalidOperationException("Not authorized to resolve this problem.");
 
-        problem.Resolve();
+        problem.Resolve(causedByUserId: command.GuideId);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return problem.ToDto();
