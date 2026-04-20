@@ -1,1 +1,77 @@
-<p>register works!</p>
+<div class="mx-auto mt-10 w-full max-w-md">
+  <h1 class="mb-6 text-center text-2xl font-bold text-slate-900">Create Account</h1>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label for="firstName" class="mb-1 block text-sm font-medium text-slate-700">First Name</label>
+        <input id="firstName" formControlName="firstName" type="text"
+          class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" />
+      </div>
+      <div>
+        <label for="lastName" class="mb-1 block text-sm font-medium text-slate-700">Last Name</label>
+        <input id="lastName" formControlName="lastName" type="text"
+          class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" />
+      </div>
+    </div>
+
+    <div>
+      <label for="username" class="mb-1 block text-sm font-medium text-slate-700">Username</label>
+      <input id="username" formControlName="username" type="text"
+        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" />
+    </div>
+
+    <div>
+      <label for="email" class="mb-1 block text-sm font-medium text-slate-700">Email</label>
+      <input id="email" formControlName="email" type="email"
+        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" />
+    </div>
+
+    <div>
+      <label for="password" class="mb-1 block text-sm font-medium text-slate-700">Password</label>
+      <input id="password" formControlName="password" type="password"
+        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" />
+      @if (form.get('password')?.errors?.['minlength'] && form.get('password')?.touched) {
+        <p class="mt-1 text-xs text-red-600">Minimum 6 characters</p>
+      }
+    </div>
+
+    <div>
+      <label for="confirmPassword" class="mb-1 block text-sm font-medium text-slate-700">Confirm Password</label>
+      <input id="confirmPassword" formControlName="confirmPassword" type="password"
+        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" />
+      @if (form.errors?.['passwordsMismatch'] && form.get('confirmPassword')?.touched) {
+        <p class="mt-1 text-xs text-red-600">Passwords do not match</p>
+      }
+    </div>
+
+    <fieldset formGroupName="interests">
+      <legend class="mb-2 text-sm font-medium text-slate-700">Interests</legend>
+      <div class="flex flex-wrap gap-3">
+        @for (interest of interests; track interest) {
+          <label class="flex items-center gap-1.5 text-sm text-slate-700">
+            <input type="checkbox" [formControlName]="interest"
+              class="rounded border-slate-300 text-sky-600 focus:ring-sky-500" />
+            {{ interest }}
+          </label>
+        }
+      </div>
+    </fieldset>
+
+    <label class="flex items-center gap-2 text-sm text-slate-700">
+      <input type="checkbox" formControlName="recommendationsEnabled"
+        class="rounded border-slate-300 text-sky-600 focus:ring-sky-500" />
+      Receive tour recommendations based on my interests
+    </label>
+
+    <button type="submit" [disabled]="form.invalid || submitting()"
+      class="w-full rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700 disabled:opacity-50">
+      {{ submitting() ? 'Creating account...' : 'Register' }}
+    </button>
+  </form>
+
+  <p class="mt-4 text-center text-sm text-slate-600">
+    Already have an account?
+    <a routerLink="/login" class="font-medium text-sky-600 hover:text-sky-700">Sign In</a>
+  </p>
+</div>
