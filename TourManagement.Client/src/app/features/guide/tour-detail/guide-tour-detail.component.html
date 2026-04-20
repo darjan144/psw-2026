@@ -40,12 +40,18 @@
               class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm" />
             <input formControlName="description" placeholder="Description"
               class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm" />
-            <input formControlName="imageUrl" placeholder="Image URL"
-              class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm" />
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Image</label>
+              <input type="file" accept="image/*" (change)="onFileSelected($event)"
+                class="block w-full text-sm text-slate-500 file:mr-3 file:rounded-md file:border-0 file:bg-sky-50 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-sky-700 hover:file:bg-sky-100" />
+              @if (selectedFile(); as f) {
+                <p class="mt-1 text-xs text-slate-500">{{ f.name }} ({{ (f.size / 1024).toFixed(0) }} KB)</p>
+              }
+            </div>
             <div class="flex gap-2">
-              <button type="submit" [disabled]="kpForm.invalid"
+              <button type="submit" [disabled]="kpForm.invalid || !selectedFile() || uploading()"
                 class="rounded-md bg-sky-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-700 disabled:opacity-50">
-                Add Key Point
+                @if (uploading()) { Uploading... } @else { Add Key Point }
               </button>
               <button type="button" (click)="clickedLatLng.set(null)"
                 class="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100">
@@ -62,9 +68,14 @@
     <!-- Key Points List -->
     <h2 class="mb-2 text-sm font-semibold text-slate-700">Key Points ({{ t.keyPoints.length }})</h2>
     @if (t.keyPoints.length) {
-      <ul class="mb-6 space-y-1 text-sm text-slate-600">
+      <ul class="mb-6 space-y-2 text-sm text-slate-600">
         @for (kp of t.keyPoints; track kp.id) {
-          <li>{{ kp.order }}. <strong>{{ kp.name }}</strong> — {{ kp.description }}</li>
+          <li class="flex items-center gap-3">
+            @if (kp.imageUrl) {
+              <img [src]="kp.imageUrl" [alt]="kp.name" class="h-10 w-10 rounded object-cover" />
+            }
+            <span>{{ kp.order }}. <strong>{{ kp.name }}</strong> — {{ kp.description }}</span>
+          </li>
         }
       </ul>
     } @else {

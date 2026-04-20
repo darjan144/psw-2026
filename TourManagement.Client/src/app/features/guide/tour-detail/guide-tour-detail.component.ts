@@ -3,8 +3,11 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DatePipe, DecimalPipe } from '@angular/common';
 
+import { switchMap } from 'rxjs';
+
 import { TourService } from '../../../core/services/tour.service';
 import { SubstituteService } from '../../../core/services/substitute.service';
+import { ImageService } from '../../../core/services/image.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { Tour, KeyPoint } from '../../../core/models/tour.model';
@@ -20,17 +23,19 @@ export class GuideTourDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly tourService = inject(TourService);
   private readonly substituteService = inject(SubstituteService);
+  private readonly imageService = inject(ImageService);
   private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
   private readonly fb = inject(FormBuilder);
 
   readonly tour = signal<Tour | null>(null);
   readonly clickedLatLng = signal<{ lat: number; lng: number } | null>(null);
+  readonly selectedFile = signal<File | null>(null);
+  readonly uploading = signal(false);
 
   readonly kpForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
     description: ['', Validators.required],
-    imageUrl: ['', Validators.required],
   });
 
   ngOnInit(): void {
@@ -48,19 +53,33 @@ export class GuideTourDetailComponent implements OnInit {
     this.clickedLatLng.set(event);
   }
 
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectedFile.set(input.files?.[0] ?? null);
+  }
+
   addKeyPoint(): void {
     const t = this.tour();
     const coords = this.clickedLatLng();
-    if (!t || !coords || this.kpForm.invalid) return;
+    const file = this.selectedFile();
+    if (!t || !coords || this.kpForm.invalid || !file) return;
 
+    this.uploading.set(true);
     const val = this.kpForm.getRawValue();
-    this.tourService
-      .addKeyPoint(t.id, {
-        ...val,
-        latitude: coords.lat,
-        longitude: coords.lng,
-        guideId: this.auth.userId()!,
-      })
+
+    this.imageService
+      .upload(file)
+      .pipe(
+        switchMap((imageUrl) =>
+          this.tourService.addKeyPoint(t.id, {
+            ...val,
+            imageUrl,
+            latitude: coords.lat,
+            longitude: coords.lng,
+            guideId: this.auth.userId()!,
+          })
+        )
+      )
       .subscribe({
         next: (kp) => {
           this.tour.set({
@@ -68,9 +87,12 @@ export class GuideTourDetailComponent implements OnInit {
             keyPoints: [...t.keyPoints, kp],
           });
           this.kpForm.reset();
+          this.selectedFile.set(null);
           this.clickedLatLng.set(null);
+          this.uploading.set(false);
           this.toast.success('Key point added');
         },
+        error: () => this.uploading.set(false),
       });
   }
 

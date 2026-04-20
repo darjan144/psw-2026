@@ -26,6 +26,7 @@
     <ProjectReference Include="..\TourManagement.Domain\TourManagement.Domain.csproj" />
     <ProjectReference Include="..\TourManagement.Application\TourManagement.Application.csproj" />
     <ProjectReference Include="..\TourManagement.Infrastructure\TourManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\TourManagement.API\TourManagement.API.csproj" />
   </ItemGroup>
 
 </Project>
