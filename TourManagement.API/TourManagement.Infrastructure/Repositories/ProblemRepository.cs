@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TourManagement.Domain.Entities;
+using TourManagement.Domain.Enums;
 using TourManagement.Domain.Interfaces;
 using TourManagement.Infrastructure.Persistence;
 
@@ -37,6 +38,16 @@ public class ProblemRepository : IProblemRepository
             .AsSplitQuery()
             .Where(p => p.TouristId == touristId)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<Problem>> GetByStatusAsync(ProblemStatus status, CancellationToken cancellationToken = default)
+    {
+        var all = await _context.Problems
+            .Include(p => p.Events)
+            .AsSplitQuery()
+            .ToListAsync(cancellationToken);
+
+        return all.Where(p => p.Status == status).ToList();
     }
 
     public async Task AddAsync(Problem problem, CancellationToken cancellationToken = default)

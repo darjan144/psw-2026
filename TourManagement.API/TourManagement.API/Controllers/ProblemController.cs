@@ -70,6 +70,15 @@ public class ProblemController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("in-review")]
+    [Authorize(Roles = "Administrator")]
+    public async Task<ActionResult<List<ProblemDto>>> GetInReview(
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetProblemsInReviewQuery(), cancellationToken);
+        return Ok(result);
+    }
+
     [HttpGet("tourist/{touristId}")]
     [Authorize]
     public async Task<ActionResult<List<ProblemDto>>> GetByTourist(
