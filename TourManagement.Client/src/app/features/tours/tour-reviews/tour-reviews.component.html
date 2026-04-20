@@ -1,0 +1,50 @@
+<div class="mt-6">
+  <h2 class="mb-3 text-lg font-semibold text-slate-900">Reviews</h2>
+
+  @if (reviews().length === 0) {
+    <p class="text-sm text-slate-500">No reviews yet.</p>
+  } @else {
+    <div class="space-y-3">
+      @for (review of reviews(); track review.id) {
+        <div class="rounded-lg border border-slate-200 bg-slate-50 p-3">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-sky-700">{{ review.rating }}/5</span>
+            <span class="text-xs text-slate-500">{{ review.createdAt | date:'mediumDate' }}</span>
+          </div>
+          @if (review.comment) {
+            <p class="mt-1 text-sm text-slate-700">{{ review.comment }}</p>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  @if (showForm()) {
+    <form [formGroup]="form" (ngSubmit)="submitReview()" class="mt-4 rounded-lg border border-sky-200 bg-sky-50 p-4">
+      <h3 class="mb-2 text-sm font-semibold text-slate-800">Write a Review</h3>
+
+      <div class="mb-3">
+        <label class="mb-1 block text-sm font-medium text-slate-700">Rating</label>
+        <select formControlName="rating"
+          class="rounded-md border border-slate-300 px-3 py-2 text-sm">
+          @for (n of [1, 2, 3, 4, 5]; track n) {
+            <option [value]="n">{{ n }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="mb-1 block text-sm font-medium text-slate-700">
+          Comment {{ commentRequired ? '(required)' : '(optional)' }}
+        </label>
+        <textarea formControlName="comment" rows="2"
+          class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm"></textarea>
+      </div>
+
+      <button type="submit"
+        class="rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700">
+        Submit Review
+      </button>
+    </form>
+  }
+</div>

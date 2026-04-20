@@ -1,0 +1,45 @@
+<div class="mb-4 flex items-center justify-between">
+  <h1 class="text-xl font-bold text-slate-900">My Tours</h1>
+  <div class="flex gap-2">
+    <button
+      (click)="toggleSort()"
+      class="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100">
+      Date: {{ sortAscending() ? 'Ascending' : 'Descending' }}
+    </button>
+    <a routerLink="/guide/tours/new"
+      class="rounded-md bg-sky-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-700">
+      + Create Tour
+    </a>
+  </div>
+</div>
+
+@if (loading()) {
+  <p class="py-8 text-center text-slate-500">Loading...</p>
+} @else if (tours().length === 0) {
+  <p class="py-8 text-center text-slate-500">You have no tours yet.</p>
+} @else {
+  <div class="space-y-3">
+    @for (tour of tours(); track tour.id) {
+      <a [routerLink]="['/guide/tours', tour.id]"
+        class="block rounded-lg border border-slate-200 bg-white p-4 shadow-sm hover:border-sky-300">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="font-semibold text-slate-900">{{ tour.name }}</span>
+            <span class="ml-2 text-xs"
+              [class]="tour.status === 'Published' ? 'text-green-600' : 'text-amber-600'">
+              {{ tour.status }}
+            </span>
+          </div>
+          <span class="text-sm text-slate-500">{{ tour.scheduledDate | date:'mediumDate' }}</span>
+        </div>
+        <p class="mt-1 line-clamp-1 text-sm text-slate-600">{{ tour.description }}</p>
+        <div class="mt-1 flex gap-3 text-xs text-slate-500">
+          <span>{{ tour.difficulty }}</span>
+          <span>{{ tour.category }}</span>
+          <span>{{ tour.price | number:'1.2-2' }} RSD</span>
+          <span>{{ tour.keyPoints.length }} key point(s)</span>
+        </div>
+      </a>
+    }
+  </div>
+}

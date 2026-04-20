@@ -1,0 +1,56 @@
+<div class="mx-auto max-w-lg">
+  <h1 class="mb-6 text-xl font-bold text-slate-900">Create New Tour</h1>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+    <div>
+      <label for="name" class="mb-1 block text-sm font-medium text-slate-700">Tour Name</label>
+      <input id="name" formControlName="name" type="text"
+        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" />
+    </div>
+
+    <div>
+      <label for="description" class="mb-1 block text-sm font-medium text-slate-700">Description</label>
+      <textarea id="description" formControlName="description" rows="3"
+        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"></textarea>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label for="difficulty" class="mb-1 block text-sm font-medium text-slate-700">Difficulty</label>
+        <select id="difficulty" formControlName="difficulty"
+          class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500">
+          @for (d of difficulties; track d) {
+            <option [value]="d">{{ d }}</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label for="category" class="mb-1 block text-sm font-medium text-slate-700">Category</label>
+        <select id="category" formControlName="category"
+          class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500">
+          @for (c of categories; track c) {
+            <option [value]="c">{{ c }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label for="price" class="mb-1 block text-sm font-medium text-slate-700">Price (RSD)</label>
+        <input id="price" formControlName="price" type="number"
+          class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" />
+      </div>
+      <div>
+        <label for="scheduledDate" class="mb-1 block text-sm font-medium text-slate-700">Scheduled Date</label>
+        <input id="scheduledDate" formControlName="scheduledDate" type="date"
+          class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" />
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="form.invalid || submitting()"
+      class="w-full rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700 disabled:opacity-50">
+      {{ submitting() ? 'Creating...' : 'Create Tour' }}
+    </button>
+  </form>
+</div>

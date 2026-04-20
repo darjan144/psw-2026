@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 
 import { CartService } from '../../core/services/cart.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -8,6 +9,7 @@ import { Cart } from '../../core/models/cart.model';
 @Component({
   selector: 'app-cart',
   standalone: true,
+  imports: [DecimalPipe],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss',
 })

@@ -1,0 +1,95 @@
+@if (tour(); as t) {
+  <a routerLink="/guide/tours" class="mb-4 inline-block text-sm text-sky-600 hover:underline">&larr; Back to my tours</a>
+
+  <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="mb-4 flex items-start justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900">{{ t.name }}</h1>
+        <div class="mt-1 flex flex-wrap gap-2 text-xs">
+          <span [class]="t.status === 'Published' ? 'rounded-full bg-green-100 px-2 py-0.5 text-green-700' : 'rounded-full bg-amber-100 px-2 py-0.5 text-amber-700'">
+            {{ t.status }}
+          </span>
+          <span class="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600">{{ t.difficulty }}</span>
+          <span class="rounded-full bg-sky-100 px-2 py-0.5 text-sky-700">{{ t.category }}</span>
+          <span class="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600">{{ t.scheduledDate | date:'mediumDate' }}</span>
+        </div>
+      </div>
+      <span class="text-xl font-bold text-slate-900">{{ t.price | number:'1.2-2' }} RSD</span>
+    </div>
+
+    <p class="mb-6 text-sm text-slate-700">{{ t.description }}</p>
+
+    <!-- Map -->
+    <div class="mb-6 h-[400px] overflow-hidden rounded-lg border border-slate-200">
+      <app-leaflet-map
+        [keyPoints]="t.keyPoints"
+        [connectPoints]="true"
+        [editable]="t.status === 'Draft'"
+        (mapClick)="onMapClick($event)" />
+    </div>
+
+    <!-- Add Key Point Form (Draft only) -->
+    @if (t.status === 'Draft') {
+      @if (clickedLatLng(); as coords) {
+        <div class="mb-6 rounded-lg border border-sky-200 bg-sky-50 p-4">
+          <h3 class="mb-2 text-sm font-semibold text-slate-800">
+            Add Key Point at ({{ coords.lat | number:'1.4-4' }}, {{ coords.lng | number:'1.4-4' }})
+          </h3>
+          <form [formGroup]="kpForm" (ngSubmit)="addKeyPoint()" class="space-y-3">
+            <input formControlName="name" placeholder="Name"
+              class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm" />
+            <input formControlName="description" placeholder="Description"
+              class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm" />
+            <input formControlName="imageUrl" placeholder="Image URL"
+              class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm" />
+            <div class="flex gap-2">
+              <button type="submit" [disabled]="kpForm.invalid"
+                class="rounded-md bg-sky-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-700 disabled:opacity-50">
+                Add Key Point
+              </button>
+              <button type="button" (click)="clickedLatLng.set(null)"
+                class="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      } @else {
+        <p class="mb-6 text-sm text-slate-500">Click on the map to add a key point.</p>
+      }
+    }
+
+    <!-- Key Points List -->
+    <h2 class="mb-2 text-sm font-semibold text-slate-700">Key Points ({{ t.keyPoints.length }})</h2>
+    @if (t.keyPoints.length) {
+      <ul class="mb-6 space-y-1 text-sm text-slate-600">
+        @for (kp of t.keyPoints; track kp.id) {
+          <li>{{ kp.order }}. <strong>{{ kp.name }}</strong> — {{ kp.description }}</li>
+        }
+      </ul>
+    } @else {
+      <p class="mb-6 text-sm text-slate-500">No key points yet.</p>
+    }
+
+    <!-- Actions -->
+    <div class="flex gap-2">
+      @if (t.status === 'Draft' && t.keyPoints.length >= 2) {
+        <button (click)="publish()"
+          class="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">
+          Publish Tour
+        </button>
+      }
+      @if (t.status === 'Published' && !t.seekingSubstitute) {
+        <button (click)="seekSubstitute()"
+          class="rounded-md border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-800 hover:bg-amber-100">
+          Seek Substitute
+        </button>
+      }
+      @if (t.seekingSubstitute) {
+        <span class="rounded-md bg-amber-100 px-4 py-2 text-sm font-medium text-amber-800">Seeking Substitute</span>
+      }
+    </div>
+  </div>
+} @else {
+  <p class="py-8 text-center text-slate-500">Loading tour...</p>
+}

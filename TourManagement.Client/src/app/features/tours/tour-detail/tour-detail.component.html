@@ -36,6 +36,8 @@
         Add to Cart
       </button>
     }
+
+    <app-tour-reviews [tourId]="t.id" [tourScheduledDate]="t.scheduledDate" />
   </div>
 } @else {
   <p class="py-8 text-center text-slate-500">Loading tour...</p>

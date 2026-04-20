@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 
 import { TourService } from '../../../core/services/tour.service';
 import { CartService } from '../../../core/services/cart.service';
@@ -9,11 +9,12 @@ import { ToastService } from '../../../core/services/toast.service';
 import { Tour } from '../../../core/models/tour.model';
 import { UserRole } from '../../../core/models/user.model';
 import { LeafletMapComponent } from '../../../shared/components/leaflet-map/leaflet-map.component';
+import { TourReviewsComponent } from '../tour-reviews/tour-reviews.component';
 
 @Component({
   selector: 'app-tour-detail',
   standalone: true,
-  imports: [DatePipe, RouterLink, LeafletMapComponent],
+  imports: [DatePipe, DecimalPipe, RouterLink, LeafletMapComponent, TourReviewsComponent],
   templateUrl: './tour-detail.component.html',
 })
 export class TourDetailComponent implements OnInit {

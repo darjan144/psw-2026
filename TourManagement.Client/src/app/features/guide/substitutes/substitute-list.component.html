@@ -1,0 +1,24 @@
+<h1 class="mb-6 text-xl font-bold text-slate-900">Tours Seeking Substitute</h1>
+
+@if (loading()) {
+  <p class="py-8 text-center text-slate-500">Loading...</p>
+} @else if (tours().length === 0) {
+  <p class="py-8 text-center text-slate-500">No tours currently seeking a substitute.</p>
+} @else {
+  <div class="space-y-3">
+    @for (tour of tours(); track tour.id) {
+      <div class="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+        <div>
+          <span class="font-semibold text-slate-900">{{ tour.name }}</span>
+          <span class="ml-2 text-sm text-slate-500">{{ tour.scheduledDate | date:'mediumDate' }}</span>
+          <p class="mt-1 text-sm text-slate-600">{{ tour.category }} &middot; {{ tour.difficulty }} &middot; {{ tour.price | number:'1.2-2' }} RSD</p>
+        </div>
+        <button
+          (click)="accept(tour.id)"
+          class="rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700">
+          Accept
+        </button>
+      </div>
+    }
+  </div>
+}
