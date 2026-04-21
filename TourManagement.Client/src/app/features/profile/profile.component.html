@@ -5,6 +5,9 @@
     <p class="text-sm text-slate-600">
       Signed in as <strong class="text-slate-900">{{ username }}</strong>
     </p>
+    <p class="mt-2 text-sm text-slate-600">
+      Bonus points: <strong class="text-slate-900">{{ bonusPoints() }}</strong>
+    </p>
   </div>
 
   <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">

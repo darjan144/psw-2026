@@ -22,6 +22,7 @@ export class ProfileComponent implements OnInit {
   readonly username = this.auth.username();
   readonly saving = signal(false);
   readonly loading = signal(true);
+  readonly bonusPoints = signal(0);
 
   readonly form = this.fb.nonNullable.group({
     interests: this.fb.nonNullable.group(
@@ -47,6 +48,7 @@ export class ProfileComponent implements OnInit {
           interests: interestFlags,
           recommendationsEnabled: profile.recommendationsEnabled,
         });
+        this.bonusPoints.set(profile.bonusPoints);
         this.loading.set(false);
       },
       error: () => this.loading.set(false),

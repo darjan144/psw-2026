@@ -11,14 +11,22 @@ namespace TourManagement.Tests.Application;
 public class CancelTourCommandHandlerTests
 {
     private readonly Mock<ITourRepository> _tourRepoMock;
+    private readonly Mock<ITourPurchaseRepository> _purchaseRepoMock;
+    private readonly Mock<IUserRepository> _userRepoMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly CancelTourCommandHandler _handler;
 
     public CancelTourCommandHandlerTests()
     {
         _tourRepoMock = new Mock<ITourRepository>();
+        _purchaseRepoMock = new Mock<ITourPurchaseRepository>();
+        _userRepoMock = new Mock<IUserRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
-        _handler = new CancelTourCommandHandler(_tourRepoMock.Object, _unitOfWorkMock.Object);
+        _purchaseRepoMock.Setup(r => r.GetByTourIdAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<TourPurchase>());
+        _handler = new CancelTourCommandHandler(
+            _tourRepoMock.Object, _purchaseRepoMock.Object,
+            _userRepoMock.Object, _unitOfWorkMock.Object);
     }
 
     [Fact]
@@ -47,6 +55,27 @@ public class CancelTourCommandHandlerTests
         await _handler.Handle(new CancelTourCommand(1, 1), CancellationToken.None);
 
         tour.Status.Should().Be(TourStatus.Archived);
+    }
+
+    [Fact]
+    public async Task Handle_AwardsBonusPointsToPurchasers()
+    {
+        var tour = new Tour("Tour", "Desc", TourDifficulty.Easy, Interest.Nature, 1000,
+            DateTime.UtcNow.AddDays(1), guideId: 1);
+        tour.AddKeyPoint(new KeyPoint("A", "d", new Coordinate(45, 19), "img.jpg", 1));
+        tour.AddKeyPoint(new KeyPoint("B", "d", new Coordinate(45, 19), "img.jpg", 2));
+        tour.Publish();
+        _tourRepoMock.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(tour);
+
+        var tourist = new User("turista", "Marko", "M", "m@test.com", "hash", UserRole.Tourist);
+        var purchase = new TourPurchase(touristId: 5, tourId: 1, pricePaid: 1000);
+        _purchaseRepoMock.Setup(r => r.GetByTourIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<TourPurchase> { purchase });
+        _userRepoMock.Setup(r => r.GetByIdAsync(5, It.IsAny<CancellationToken>())).ReturnsAsync(tourist);
+
+        await _handler.Handle(new CancelTourCommand(1, 1), CancellationToken.None);
+
+        tourist.BonusPoints.Should().Be(1000);
     }
 
     [Fact]

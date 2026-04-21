@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 
 import { CartService } from '../../core/services/cart.service';
+import { ProfileService } from '../../core/services/profile.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../core/services/toast.service';
 import { Cart } from '../../core/models/cart.model';
@@ -15,6 +16,7 @@ import { Cart } from '../../core/models/cart.model';
 })
 export class CartComponent implements OnInit {
   private readonly cartService = inject(CartService);
+  private readonly profileService = inject(ProfileService);
   private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
 
@@ -22,6 +24,7 @@ export class CartComponent implements OnInit {
   readonly loading = signal(true);
   readonly purchasing = signal(false);
   readonly useBonusPoints = signal(false);
+  readonly bonusPoints = signal(0);
 
   private get touristId(): number {
     return this.auth.userId()!;
@@ -29,6 +32,9 @@ export class CartComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadCart();
+    this.profileService.getProfile(this.touristId).subscribe({
+      next: (profile) => this.bonusPoints.set(profile.bonusPoints),
+    });
   }
 
   removeItem(tourId: number): void {

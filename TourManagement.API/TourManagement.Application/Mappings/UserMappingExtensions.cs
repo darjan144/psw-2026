@@ -22,7 +22,8 @@ public static class UserMappingExtensions
             user.Username,
             user.Email,
             user.Interests.Select(i => i.ToString()).ToList(),
-            user.RecommendationsEnabled
+            user.RecommendationsEnabled,
+            user.BonusPoints
         );
     }
 }
