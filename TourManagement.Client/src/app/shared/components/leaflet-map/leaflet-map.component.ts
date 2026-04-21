@@ -82,8 +82,12 @@ export class LeafletMapComponent implements AfterViewInit, OnDestroy, OnChanges 
     const latLngs: L.LatLngExpression[] = [];
 
     for (const kp of sorted) {
+      const img = kp.imageUrl
+        ? `<img src="${kp.imageUrl}" alt="${kp.name}" style="width:100%;max-width:200px;border-radius:4px;margin-bottom:6px;" />`
+        : '';
       const marker = L.marker([kp.latitude, kp.longitude]).bindPopup(
-        `<strong>${kp.name}</strong><br/>${kp.description}`
+        `${img}<strong>${kp.name}</strong><br/>${kp.description}`,
+        { maxWidth: 220 }
       );
       this.markerLayer.addLayer(marker);
       latLngs.push([kp.latitude, kp.longitude]);

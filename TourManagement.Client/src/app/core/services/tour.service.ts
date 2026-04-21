@@ -61,6 +61,32 @@ export class TourService {
     });
   }
 
+  updateTour(
+    tourId: number,
+    cmd: {
+      guideId: number;
+      name: string;
+      description: string;
+      difficulty: string;
+      category: string;
+      price: number;
+    }
+  ): Observable<Tour> {
+    return this.http.put<Tour>(`${environment.apiUrl}/tour/${tourId}`, cmd);
+  }
+
+  archiveTour(tourId: number, guideId: number): Observable<Tour> {
+    return this.http.put<Tour>(`${environment.apiUrl}/tour/${tourId}/archive`, {
+      tourId,
+      guideId,
+    });
+  }
+
+  cancelTour(tourId: number, guideId: number): Observable<void> {
+    const params = new HttpParams().set('guideId', guideId);
+    return this.http.delete<void>(`${environment.apiUrl}/tour/${tourId}`, { params });
+  }
+
   findById(id: number): Tour | undefined {
     return this._publishedTours().find((t) => t.id === id);
   }

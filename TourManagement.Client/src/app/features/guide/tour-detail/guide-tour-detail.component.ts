@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DatePipe, DecimalPipe } from '@angular/common';
 
@@ -10,7 +10,8 @@ import { SubstituteService } from '../../../core/services/substitute.service';
 import { ImageService } from '../../../core/services/image.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { Tour, KeyPoint } from '../../../core/models/tour.model';
+import { Tour, KeyPoint, TourDifficulty } from '../../../core/models/tour.model';
+import { Interest } from '../../../core/models/user.model';
 import { LeafletMapComponent } from '../../../shared/components/leaflet-map/leaflet-map.component';
 
 @Component({
@@ -21,6 +22,7 @@ import { LeafletMapComponent } from '../../../shared/components/leaflet-map/leaf
 })
 export class GuideTourDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly tourService = inject(TourService);
   private readonly substituteService = inject(SubstituteService);
   private readonly imageService = inject(ImageService);
@@ -32,10 +34,22 @@ export class GuideTourDetailComponent implements OnInit {
   readonly clickedLatLng = signal<{ lat: number; lng: number } | null>(null);
   readonly selectedFile = signal<File | null>(null);
   readonly uploading = signal(false);
+  readonly editing = signal(false);
+
+  readonly difficulties = Object.values(TourDifficulty);
+  readonly categories = Object.values(Interest);
 
   readonly kpForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
     description: ['', Validators.required],
+  });
+
+  readonly editForm = this.fb.nonNullable.group({
+    name: ['', Validators.required],
+    description: [''],
+    difficulty: ['Easy'],
+    category: ['Nature'],
+    price: [0, [Validators.required, Validators.min(0)]],
   });
 
   ngOnInit(): void {
@@ -114,6 +128,60 @@ export class GuideTourDetailComponent implements OnInit {
       next: () => {
         this.tour.set({ ...t, seekingSubstitute: true });
         this.toast.success('Tour marked as seeking substitute');
+      },
+    });
+  }
+
+  startEditing(): void {
+    const t = this.tour();
+    if (!t) return;
+    this.editForm.patchValue({
+      name: t.name,
+      description: t.description,
+      difficulty: t.difficulty,
+      category: t.category,
+      price: t.price,
+    });
+    this.editing.set(true);
+  }
+
+  cancelEditing(): void {
+    this.editing.set(false);
+  }
+
+  saveEdit(): void {
+    const t = this.tour();
+    if (!t || this.editForm.invalid) return;
+    const val = this.editForm.getRawValue();
+    this.tourService
+      .updateTour(t.id, { guideId: this.auth.userId()!, ...val })
+      .subscribe({
+        next: (updated) => {
+          this.tour.set(updated);
+          this.editing.set(false);
+          this.toast.success('Tour updated');
+        },
+      });
+  }
+
+  archive(): void {
+    const t = this.tour();
+    if (!t) return;
+    this.tourService.archiveTour(t.id, this.auth.userId()!).subscribe({
+      next: (updated) => {
+        this.tour.set(updated);
+        this.toast.success('Tour archived (unpublished)');
+      },
+    });
+  }
+
+  cancelTour(): void {
+    const t = this.tour();
+    if (!t) return;
+    this.tourService.cancelTour(t.id, this.auth.userId()!).subscribe({
+      next: () => {
+        this.toast.success('Tour cancelled');
+        this.router.navigate(['/guide/tours']);
       },
     });
   }

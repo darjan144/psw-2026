@@ -2,22 +2,66 @@
   <a routerLink="/guide/tours" class="mb-4 inline-block text-sm text-sky-600 hover:underline">&larr; Back to my tours</a>
 
   <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-    <div class="mb-4 flex items-start justify-between">
-      <div>
-        <h1 class="text-2xl font-bold text-slate-900">{{ t.name }}</h1>
-        <div class="mt-1 flex flex-wrap gap-2 text-xs">
-          <span [class]="t.status === 'Published' ? 'rounded-full bg-green-100 px-2 py-0.5 text-green-700' : 'rounded-full bg-amber-100 px-2 py-0.5 text-amber-700'">
-            {{ t.status }}
-          </span>
-          <span class="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600">{{ t.difficulty }}</span>
-          <span class="rounded-full bg-sky-100 px-2 py-0.5 text-sky-700">{{ t.category }}</span>
-          <span class="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600">{{ t.scheduledDate | date:'mediumDate' }}</span>
+    @if (editing()) {
+      <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="mb-6 space-y-3">
+        <h2 class="text-lg font-semibold text-slate-900">Edit Tour</h2>
+        <input formControlName="name" placeholder="Tour name"
+          class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm" />
+        <textarea formControlName="description" placeholder="Description" rows="3"
+          class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm"></textarea>
+        <div class="flex gap-3">
+          <select formControlName="difficulty"
+            class="rounded-md border border-slate-300 px-3 py-2 text-sm">
+            @for (d of difficulties; track d) {
+              <option [value]="d">{{ d }}</option>
+            }
+          </select>
+          <select formControlName="category"
+            class="rounded-md border border-slate-300 px-3 py-2 text-sm">
+            @for (c of categories; track c) {
+              <option [value]="c">{{ c }}</option>
+            }
+          </select>
+          <input formControlName="price" type="number" placeholder="Price"
+            class="w-32 rounded-md border border-slate-300 px-3 py-2 text-sm" />
+        </div>
+        <div class="flex gap-2">
+          <button type="submit" [disabled]="editForm.invalid"
+            class="rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700 disabled:opacity-50">
+            Save
+          </button>
+          <button type="button" (click)="cancelEditing()"
+            class="rounded-md border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
+            Cancel
+          </button>
+        </div>
+      </form>
+    } @else {
+      <div class="mb-4 flex items-start justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900">{{ t.name }}</h1>
+          <div class="mt-1 flex flex-wrap gap-2 text-xs">
+            <span [class]="t.status === 'Published' ? 'rounded-full bg-green-100 px-2 py-0.5 text-green-700' : t.status === 'Archived' ? 'rounded-full bg-slate-100 px-2 py-0.5 text-slate-500' : 'rounded-full bg-amber-100 px-2 py-0.5 text-amber-700'">
+              {{ t.status }}
+            </span>
+            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600">{{ t.difficulty }}</span>
+            <span class="rounded-full bg-sky-100 px-2 py-0.5 text-sky-700">{{ t.category }}</span>
+            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600">{{ t.scheduledDate | date:'mediumDate' }}</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-xl font-bold text-slate-900">{{ t.price | number:'1.2-2' }} RSD</span>
+          @if (t.status !== 'Archived') {
+            <button (click)="startEditing()"
+              class="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100">
+              Edit
+            </button>
+          }
         </div>
       </div>
-      <span class="text-xl font-bold text-slate-900">{{ t.price | number:'1.2-2' }} RSD</span>
-    </div>
 
-    <p class="mb-6 text-sm text-slate-700">{{ t.description }}</p>
+      <p class="mb-6 text-sm text-slate-700">{{ t.description }}</p>
+    }
 
     <!-- Map -->
     <div class="mb-6 h-[400px] overflow-hidden rounded-lg border border-slate-200">
@@ -83,7 +127,7 @@
     }
 
     <!-- Actions -->
-    <div class="flex gap-2">
+    <div class="flex flex-wrap gap-2">
       @if (t.status === 'Draft' && t.keyPoints.length >= 2) {
         <button (click)="publish()"
           class="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">
@@ -95,9 +139,19 @@
           class="rounded-md border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-800 hover:bg-amber-100">
           Seek Substitute
         </button>
+        <button (click)="archive()"
+          class="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
+          Unpublish
+        </button>
       }
       @if (t.seekingSubstitute) {
         <span class="rounded-md bg-amber-100 px-4 py-2 text-sm font-medium text-amber-800">Seeking Substitute</span>
+      }
+      @if (t.status !== 'Archived') {
+        <button (click)="cancelTour()"
+          class="rounded-md border border-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50">
+          Cancel Tour
+        </button>
       }
     </div>
   </div>

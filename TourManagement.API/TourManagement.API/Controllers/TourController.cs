@@ -48,6 +48,36 @@ public class TourController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPut("{tourId}")]
+    public async Task<ActionResult<TourDto>> Update(
+        long tourId,
+        [FromBody] UpdateTourCommand command,
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(command with { TourId = tourId }, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPut("{tourId}/archive")]
+    public async Task<ActionResult<TourDto>> Archive(
+        long tourId,
+        [FromBody] ArchiveTourCommand command,
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(command with { TourId = tourId }, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpDelete("{tourId}")]
+    public async Task<ActionResult> Cancel(
+        long tourId,
+        [FromQuery] long guideId,
+        CancellationToken cancellationToken)
+    {
+        await _mediator.Send(new CancelTourCommand(tourId, guideId), cancellationToken);
+        return NoContent();
+    }
+
     [HttpGet("published")]
     [AllowAnonymous]
     public async Task<ActionResult<List<TourDto>>> GetPublished(
