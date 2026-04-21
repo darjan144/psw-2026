@@ -47,9 +47,19 @@
             Available: <strong>{{ bonusPoints() }}</strong> points
           </span>
         </div>
-        <span class="text-lg font-bold text-slate-900">
-          Total: {{ cart()!.totalPrice | number:'1.2-2' }} RSD
-        </span>
+        <div class="text-right">
+          @if (discount() > 0) {
+            <span class="block text-sm text-slate-500 line-through">
+              {{ cart()!.totalPrice | number:'1.2-2' }} RSD
+            </span>
+            <span class="block text-xs text-green-600">
+              -{{ discount() | number:'1.2-2' }} RSD (bonus points)
+            </span>
+          }
+          <span class="text-lg font-bold text-slate-900">
+            Total: {{ effectiveTotal() | number:'1.2-2' }} RSD
+          </span>
+        </div>
       </div>
 
       <div class="mt-4 flex justify-end">

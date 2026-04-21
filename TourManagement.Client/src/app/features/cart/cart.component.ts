@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 
 import { CartService } from '../../core/services/cart.service';
@@ -25,6 +25,16 @@ export class CartComponent implements OnInit {
   readonly purchasing = signal(false);
   readonly useBonusPoints = signal(false);
   readonly bonusPoints = signal(0);
+
+  readonly discount = computed(() => {
+    if (!this.useBonusPoints() || !this.cart()) return 0;
+    return Math.min(this.bonusPoints(), this.cart()!.totalPrice);
+  });
+
+  readonly effectiveTotal = computed(() => {
+    if (!this.cart()) return 0;
+    return this.cart()!.totalPrice - this.discount();
+  });
 
   private get touristId(): number {
     return this.auth.userId()!;
