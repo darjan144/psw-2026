@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { Cart } from '../models/cart.model';
+import { TouristPurchase } from '../models/purchase.model';
 
 export interface PurchaseResult {
   id: number;
@@ -41,6 +42,14 @@ export class CartService {
     return this.http.post<PurchaseResult[]>(
       `${environment.apiUrl}/shoppingcart/purchase`,
       { touristId, useBonusPoints }
+    );
+  }
+
+  getMyPurchases(touristId: number): Observable<TouristPurchase[]> {
+    const params = new HttpParams().set('touristId', touristId);
+    return this.http.get<TouristPurchase[]>(
+      `${environment.apiUrl}/shoppingcart/purchases`,
+      { params }
     );
   }
 }

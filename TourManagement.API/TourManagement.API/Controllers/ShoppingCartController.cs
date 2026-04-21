@@ -19,6 +19,15 @@ public class ShoppingCartController : ControllerBase
         _mediator = mediator;
     }
 
+    [HttpGet("purchases")]
+    public async Task<ActionResult<List<TouristPurchaseDto>>> GetPurchases(
+        [FromQuery] long touristId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetTouristPurchasesQuery(touristId), cancellationToken);
+        return Ok(result);
+    }
+
     [HttpGet]
     public async Task<ActionResult<CartDto>> GetCart(
         [FromQuery] long touristId,

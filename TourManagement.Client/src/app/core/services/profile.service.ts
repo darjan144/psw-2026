@@ -10,6 +10,10 @@ import { Interest } from '../models/user.model';
 export class ProfileService {
   constructor(private readonly http: HttpClient) {}
 
+  getProfile(touristId: number): Observable<Profile> {
+    return this.http.get<Profile>(`${environment.apiUrl}/profile/${touristId}`);
+  }
+
   updateProfile(cmd: {
     touristId: number;
     interests: Interest[];

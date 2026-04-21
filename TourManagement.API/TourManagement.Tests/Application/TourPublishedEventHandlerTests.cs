@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using TourManagement.Application.EventHandlers;
 using TourManagement.Application.Services;
@@ -19,7 +20,9 @@ public class TourPublishedEventHandlerTests
     {
         _userRepoMock = new Mock<IUserRepository>();
         _emailServiceMock = new Mock<IEmailService>();
-        _handler = new TourPublishedEventHandler(_userRepoMock.Object, _emailServiceMock.Object);
+        _handler = new TourPublishedEventHandler(
+            _userRepoMock.Object, _emailServiceMock.Object,
+            Mock.Of<ILogger<TourPublishedEventHandler>>());
     }
 
     [Fact]

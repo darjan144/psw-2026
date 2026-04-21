@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using TourManagement.Application.EventHandlers;
 using TourManagement.Application.Services;
@@ -21,7 +22,9 @@ public class ProblemCreatedEventHandlerTests
         _tourRepoMock = new Mock<ITourRepository>();
         _userRepoMock = new Mock<IUserRepository>();
         _emailServiceMock = new Mock<IEmailService>();
-        _handler = new ProblemCreatedEventHandler(_tourRepoMock.Object, _userRepoMock.Object, _emailServiceMock.Object);
+        _handler = new ProblemCreatedEventHandler(
+            _tourRepoMock.Object, _userRepoMock.Object, _emailServiceMock.Object,
+            Mock.Of<ILogger<ProblemCreatedEventHandler>>());
     }
 
     [Fact]

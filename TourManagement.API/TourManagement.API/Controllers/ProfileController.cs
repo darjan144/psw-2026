@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TourManagement.Application.Commands;
 using TourManagement.Application.DTOs;
+using TourManagement.Application.Queries;
 
 namespace TourManagement.API.Controllers;
 
@@ -16,6 +17,15 @@ public class ProfileController : ControllerBase
     public ProfileController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet("{touristId:long}")]
+    public async Task<ActionResult<ProfileDto>> GetProfile(
+        long touristId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetProfileQuery(touristId), cancellationToken);
+        return Ok(result);
     }
 
     [HttpPut]

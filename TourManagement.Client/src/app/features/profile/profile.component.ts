@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 
 import { ProfileService } from '../../core/services/profile.service';
@@ -12,7 +12,7 @@ import { Interest } from '../../core/models/user.model';
   imports: [ReactiveFormsModule],
   templateUrl: './profile.component.html',
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
   private readonly profileService = inject(ProfileService);
   private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
@@ -21,6 +21,7 @@ export class ProfileComponent {
   readonly interests = Object.values(Interest);
   readonly username = this.auth.username();
   readonly saving = signal(false);
+  readonly loading = signal(true);
 
   readonly form = this.fb.nonNullable.group({
     interests: this.fb.nonNullable.group(
@@ -31,6 +32,26 @@ export class ProfileComponent {
     ),
     recommendationsEnabled: [true],
   });
+
+  ngOnInit(): void {
+    const userId = this.auth.userId();
+    if (!userId) return;
+
+    this.profileService.getProfile(userId).subscribe({
+      next: (profile) => {
+        const interestFlags = Object.values(Interest).reduce(
+          (acc, i) => ({ ...acc, [i]: profile.interests.includes(i) }),
+          {} as Record<string, boolean>
+        );
+        this.form.patchValue({
+          interests: interestFlags,
+          recommendationsEnabled: profile.recommendationsEnabled,
+        });
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
 
   save(): void {
     this.saving.set(true);

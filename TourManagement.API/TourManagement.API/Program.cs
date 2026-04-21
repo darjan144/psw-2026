@@ -65,6 +65,10 @@ if (!app.Environment.IsDevelopment())
 
 app.UseCors("AngularClient");
 app.UseStaticFiles();
+
+var uploadsPath = Path.Combine(app.Environment.WebRootPath, "uploads");
+Directory.CreateDirectory(uploadsPath);
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

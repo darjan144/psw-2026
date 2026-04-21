@@ -29,6 +29,12 @@ export const routes: Routes = [
       import('./features/cart/cart.component').then((m) => m.CartComponent),
   },
   {
+    path: 'my-tours',
+    canActivate: [authGuard, roleGuard('Tourist')],
+    loadComponent: () =>
+      import('./features/my-tours/my-tours.component').then((m) => m.MyToursComponent),
+  },
+  {
     path: 'profile',
     canActivate: [authGuard, roleGuard('Tourist')],
     loadComponent: () =>

@@ -33,8 +33,7 @@ public class ImageController : ControllerBase
         if (!AllowedExtensions.Contains(ext))
             return BadRequest(new { error = "Only image files (jpg, png, gif, webp) are allowed." });
 
-        var webRoot = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
-        var uploadsDir = Path.Combine(webRoot, "uploads");
+        var uploadsDir = Path.Combine(_env.WebRootPath, "uploads");
         Directory.CreateDirectory(uploadsDir);
 
         var fileName = $"{Guid.NewGuid()}{ext}";

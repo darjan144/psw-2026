@@ -1,0 +1,65 @@
+<h1 class="mb-6 text-xl font-bold text-slate-900">My Tours</h1>
+
+@if (loading()) {
+  <p class="py-8 text-center text-slate-500">Loading...</p>
+} @else if (purchases().length === 0) {
+  <p class="py-8 text-center text-slate-500">You haven't purchased any tours yet.</p>
+} @else {
+  <div class="space-y-4">
+    @for (p of purchases(); track p.purchaseId) {
+      <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div>
+            <a [routerLink]="['/tours', p.tourId]"
+              class="text-lg font-semibold text-sky-700 hover:underline">
+              {{ p.tourName }}
+            </a>
+            <div class="mt-1 flex flex-wrap gap-2 text-xs">
+              <span class="rounded-full bg-sky-100 px-2 py-0.5 text-sky-700">{{ p.category }}</span>
+              <span class="rounded-full bg-green-100 px-2 py-0.5 text-green-700">{{ p.scheduledDate | date:'mediumDate' }}</span>
+            </div>
+          </div>
+          <span class="text-lg font-bold text-slate-900">{{ p.pricePaid | number:'1.2-2' }} RSD</span>
+        </div>
+
+        <p class="mt-1 text-xs text-slate-500">Purchased: {{ p.purchasedAt | date:'medium' }}</p>
+
+        @if (canReportProblem(p)) {
+          @if (reportingForTourId() === p.tourId) {
+            <div class="mt-3 space-y-2 rounded-md border border-slate-200 bg-slate-50 p-3">
+              <input
+                type="text"
+                [(ngModel)]="problemTitle"
+                placeholder="Problem title"
+                class="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:border-sky-500 focus:ring-sky-500" />
+              <textarea
+                [(ngModel)]="problemDescription"
+                placeholder="Describe the problem..."
+                rows="3"
+                class="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:border-sky-500 focus:ring-sky-500"></textarea>
+              <div class="flex gap-2">
+                <button
+                  (click)="submitProblem(p.tourId)"
+                  [disabled]="!problemTitle.trim()"
+                  class="rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50">
+                  Submit
+                </button>
+                <button
+                  (click)="cancelReport()"
+                  class="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          } @else {
+            <button
+              (click)="openReportForm(p.tourId)"
+              class="mt-3 rounded-md border border-red-300 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50">
+              Report Problem
+            </button>
+          }
+        }
+      </div>
+    }
+  </div>
+}
