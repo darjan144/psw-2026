@@ -82,8 +82,15 @@ public class PurchaseToursCommandHandler : IRequestHandler<PurchaseToursCommand,
         cart.Clear();
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        await _emailService.SendPurchaseConfirmationAsync(
-            user.Email, user.FirstName, tourInfos, totalPrice - discount, cancellationToken);
+        try
+        {
+            await _emailService.SendPurchaseConfirmationAsync(
+                user.Email, user.FirstName, tourInfos, totalPrice - discount, cancellationToken);
+        }
+        catch
+        {
+            // Email failure should not fail the purchase
+        }
 
         return purchases.Select(p => p.ToDto()).ToList();
     }

@@ -18,7 +18,7 @@ public static class DependencyInjection
         services.AddDbContext<TourManagementDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddScoped<IUnitOfWork, TourManagementDbContext>();
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<TourManagementDbContext>());
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITourRepository, TourRepository>();

@@ -37,9 +37,11 @@ public class UserRepository : IUserRepository
 
     public async Task<List<User>> GetTouristsWithInterestAsync(Interest interest, CancellationToken cancellationToken = default)
     {
-        return await _context.Users
-            .Where(u => u.Role == UserRole.Tourist && u.RecommendationsEnabled && u.Interests.Contains(interest))
+        var tourists = await _context.Users
+            .Where(u => u.Role == UserRole.Tourist && u.RecommendationsEnabled)
             .ToListAsync(cancellationToken);
+
+        return tourists.Where(u => u.Interests.Contains(interest)).ToList();
     }
 
     public async Task AddAsync(User user, CancellationToken cancellationToken = default)
