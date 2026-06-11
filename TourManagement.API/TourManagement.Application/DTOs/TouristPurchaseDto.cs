@@ -7,5 +7,6 @@ public record TouristPurchaseDto(
     string Category,
     DateTime ScheduledDate,
     double PricePaid,
-    DateTime PurchasedAt
+    DateTime PurchasedAt,
+    string TourStatus
 );

@@ -41,12 +41,12 @@ export class MyToursComponent implements OnInit {
     });
   }
 
+  isCancelled(purchase: TouristPurchase): boolean {
+    return purchase.tourStatus === 'Archived';
+  }
+
   canReportProblem(purchase: TouristPurchase): boolean {
-    const scheduled = new Date(purchase.scheduledDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    scheduled.setHours(0, 0, 0, 0);
-    return scheduled <= today;
+    return !this.isCancelled(purchase);
   }
 
   openReportForm(tourId: number): void {

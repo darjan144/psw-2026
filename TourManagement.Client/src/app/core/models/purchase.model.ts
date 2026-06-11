@@ -6,4 +6,5 @@ export interface TouristPurchase {
   scheduledDate: string;
   pricePaid: number;
   purchasedAt: string;
+  tourStatus: string;
 }

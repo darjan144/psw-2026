@@ -174,25 +174,42 @@ public class PurchaseToursCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_AlreadyPurchasedTour_ShouldSkipDuplicate()
+    public async Task Handle_AlreadyPurchasedTour_ShouldThrow()
     {
         var user = CreateTourist();
         var cart = new ShoppingCart(touristId: 1);
         cart.AddItem(1, "Tura 1", 1500);
         cart.AddItem(2, "Tura 2", 2000);
-        var tour1 = new Tour("Tura 1", "Opis", TourDifficulty.Easy, Interest.Nature, 1500, DateTime.UtcNow.AddDays(7), 1);
-        var tour2 = new Tour("Tura 2", "Opis", TourDifficulty.Medium, Interest.Art, 2000, DateTime.UtcNow.AddDays(14), 1);
         _userRepoMock.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(user);
         _cartRepoMock.Setup(r => r.GetByTouristIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(cart);
-        _tourRepoMock.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(tour1);
-        _tourRepoMock.Setup(r => r.GetByIdAsync(2, It.IsAny<CancellationToken>())).ReturnsAsync(tour2);
         _purchaseRepoMock.Setup(r => r.HasPurchasedAsync(1, 1, It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _purchaseRepoMock.Setup(r => r.HasPurchasedAsync(1, 2, It.IsAny<CancellationToken>())).ReturnsAsync(false);
         var command = new PurchaseToursCommand(TouristId: 1);
 
-        var result = await _handler.Handle(command, CancellationToken.None);
+        var act = () => _handler.Handle(command, CancellationToken.None);
 
-        result.Should().HaveCount(1);
-        _purchaseRepoMock.Verify(r => r.AddAsync(It.IsAny<TourPurchase>(), It.IsAny<CancellationToken>()), Times.Once);
+        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("*already purchased*");
+        _purchaseRepoMock.Verify(r => r.AddAsync(It.IsAny<TourPurchase>(), It.IsAny<CancellationToken>()), Times.Never);
+        _emailServiceMock.Verify(e => e.SendPurchaseConfirmationAsync(
+            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<List<PurchasedTourInfo>>(),
+            It.IsAny<double>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_AlreadyPurchasedTourWithBonusPoints_ShouldNotConsumePoints()
+    {
+        var user = CreateTourist();
+        user.AddBonusPoints(500);
+        var cart = new ShoppingCart(touristId: 1);
+        cart.AddItem(1, "Tura 1", 1500);
+        _userRepoMock.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(user);
+        _cartRepoMock.Setup(r => r.GetByTouristIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(cart);
+        _purchaseRepoMock.Setup(r => r.HasPurchasedAsync(1, 1, It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        var command = new PurchaseToursCommand(TouristId: 1, UseBonusPoints: true);
+
+        var act = () => _handler.Handle(command, CancellationToken.None);
+
+        await act.Should().ThrowAsync<InvalidOperationException>();
+        user.BonusPoints.Should().Be(500);
     }
 }

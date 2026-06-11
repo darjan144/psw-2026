@@ -10,13 +10,20 @@
       <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <div class="flex items-start justify-between">
           <div>
-            <a [routerLink]="['/tours', p.tourId]"
-              class="text-lg font-semibold text-sky-700 hover:underline">
-              {{ p.tourName }}
-            </a>
+            @if (isCancelled(p)) {
+              <span class="text-lg font-semibold text-slate-500">{{ p.tourName }}</span>
+            } @else {
+              <a [routerLink]="['/tours', p.tourId]"
+                class="text-lg font-semibold text-sky-700 hover:underline">
+                {{ p.tourName }}
+              </a>
+            }
             <div class="mt-1 flex flex-wrap gap-2 text-xs">
               <span class="rounded-full bg-sky-100 px-2 py-0.5 text-sky-700">{{ p.category }}</span>
               <span class="rounded-full bg-green-100 px-2 py-0.5 text-green-700">{{ p.scheduledDate | date:'mediumDate' }}</span>
+              @if (isCancelled(p)) {
+                <span class="rounded-full bg-red-100 px-2 py-0.5 font-medium text-red-700">Cancelled</span>
+              }
             </div>
           </div>
           <span class="text-lg font-bold text-slate-900">{{ p.pricePaid | number:'1.2-2' }} RSD</span>

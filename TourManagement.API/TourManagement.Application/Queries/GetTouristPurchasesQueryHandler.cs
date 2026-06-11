@@ -32,7 +32,8 @@ public class GetTouristPurchasesQueryHandler : IRequestHandler<GetTouristPurchas
                 tour.Category.ToString(),
                 tour.ScheduledDate,
                 purchase.PricePaid,
-                purchase.PurchasedAt
+                purchase.PurchasedAt,
+                tour.Status.ToString()
             ));
         }
 

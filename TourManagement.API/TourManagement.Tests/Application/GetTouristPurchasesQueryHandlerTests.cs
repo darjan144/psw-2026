@@ -40,6 +40,26 @@ public class GetTouristPurchasesQueryHandlerTests
         result[0].TourName.Should().Be("City Walk");
         result[0].Category.Should().Be("Art");
         result[0].PricePaid.Should().Be(450);
+        result[0].TourStatus.Should().Be("Draft");
+    }
+
+    [Fact]
+    public async Task Handle_CancelledTour_ReturnsArchivedStatus()
+    {
+        var tour = new Tour("Cancelled Tour", "Opis", TourDifficulty.Easy, Interest.Nature, 500, DateTime.UtcNow.AddDays(1), 10);
+        typeof(Entity).GetProperty("Id")!.SetValue(tour, 1L);
+        tour.Cancel();
+
+        var purchase = new TourPurchase(5, 1, 500);
+
+        _purchaseRepoMock.Setup(r => r.GetByTouristIdAsync(5, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<TourPurchase> { purchase });
+        _tourRepoMock.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(tour);
+
+        var result = await _handler.Handle(new GetTouristPurchasesQuery(5), CancellationToken.None);
+
+        result[0].TourStatus.Should().Be("Archived");
     }
 
     [Fact]

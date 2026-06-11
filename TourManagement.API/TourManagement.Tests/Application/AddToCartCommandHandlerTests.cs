@@ -12,6 +12,7 @@ public class AddToCartCommandHandlerTests
 {
     private readonly Mock<IShoppingCartRepository> _cartRepoMock;
     private readonly Mock<ITourRepository> _tourRepoMock;
+    private readonly Mock<ITourPurchaseRepository> _purchaseRepoMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly AddToCartCommandHandler _handler;
 
@@ -19,8 +20,9 @@ public class AddToCartCommandHandlerTests
     {
         _cartRepoMock = new Mock<IShoppingCartRepository>();
         _tourRepoMock = new Mock<ITourRepository>();
+        _purchaseRepoMock = new Mock<ITourPurchaseRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
-        _handler = new AddToCartCommandHandler(_cartRepoMock.Object, _tourRepoMock.Object, _unitOfWorkMock.Object);
+        _handler = new AddToCartCommandHandler(_cartRepoMock.Object, _tourRepoMock.Object, _purchaseRepoMock.Object, _unitOfWorkMock.Object);
     }
 
     private Tour CreatePublishedTour(long id = 1)
@@ -85,6 +87,19 @@ public class AddToCartCommandHandlerTests
         var act = () => _handler.Handle(command, CancellationToken.None);
 
         await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("*published*");
+    }
+
+    [Fact]
+    public async Task Handle_AlreadyPurchasedTour_ShouldThrow()
+    {
+        var tour = CreatePublishedTour();
+        _tourRepoMock.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(tour);
+        _purchaseRepoMock.Setup(r => r.HasPurchasedAsync(1, 1, It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        var command = new AddToCartCommand(TourId: 1, TouristId: 1);
+
+        var act = () => _handler.Handle(command, CancellationToken.None);
+
+        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("*already purchased*");
     }
 
     [Fact]

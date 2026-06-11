@@ -39,6 +39,11 @@
 
     <app-tour-reviews [tourId]="t.id" [tourScheduledDate]="t.scheduledDate" />
   </div>
+} @else if (notFound()) {
+  <div class="py-8 text-center">
+    <p class="text-slate-500">This tour is no longer available.</p>
+    <a routerLink="/tours" class="mt-2 inline-block text-sm text-sky-600 hover:underline">&larr; Back to tours</a>
+  </div>
 } @else {
   <p class="py-8 text-center text-slate-500">Loading tour...</p>
 }

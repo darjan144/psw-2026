@@ -43,6 +43,12 @@ public class PurchaseToursCommandHandler : IRequestHandler<PurchaseToursCommand,
         if (!cart.Items.Any())
             throw new InvalidOperationException("Cart is empty.");
 
+        foreach (var item in cart.Items)
+        {
+            if (await _purchaseRepository.HasPurchasedAsync(command.TouristId, item.TourId, cancellationToken))
+                throw new InvalidOperationException($"Tour '{item.TourName}' is already purchased. Remove it from the cart.");
+        }
+
         var totalPrice = cart.GetTotalPrice();
         var discount = 0.0;
 
@@ -62,13 +68,6 @@ public class PurchaseToursCommandHandler : IRequestHandler<PurchaseToursCommand,
 
         foreach (var item in cart.Items)
         {
-            var alreadyPurchased = await _purchaseRepository.HasPurchasedAsync(command.TouristId, item.TourId, cancellationToken);
-            if (alreadyPurchased)
-            {
-                index++;
-                continue;
-            }
-
             var pricePaid = pricePerItem[index];
             var purchase = new TourPurchase(command.TouristId, item.TourId, pricePaid);
             await _purchaseRepository.AddAsync(purchase, cancellationToken);

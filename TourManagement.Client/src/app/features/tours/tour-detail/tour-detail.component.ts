@@ -25,6 +25,7 @@ export class TourDetailComponent implements OnInit {
   private readonly toast = inject(ToastService);
 
   readonly tour = signal<Tour | null>(null);
+  readonly notFound = signal(false);
   readonly isTourist = this.auth.role() === UserRole.Tourist;
 
   ngOnInit(): void {
@@ -34,7 +35,12 @@ export class TourDetailComponent implements OnInit {
       this.tour.set(cached);
     } else {
       this.tourService.getPublishedTours().subscribe({
-        next: () => this.tour.set(this.tourService.findById(id) ?? null),
+        next: () => {
+          const found = this.tourService.findById(id) ?? null;
+          this.tour.set(found);
+          this.notFound.set(!found);
+        },
+        error: () => this.notFound.set(true),
       });
     }
   }

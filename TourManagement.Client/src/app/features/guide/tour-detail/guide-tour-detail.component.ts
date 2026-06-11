@@ -170,7 +170,7 @@ export class GuideTourDetailComponent implements OnInit {
     this.tourService.archiveTour(t.id, this.auth.userId()!).subscribe({
       next: (updated) => {
         this.tour.set(updated);
-        this.toast.success('Tour archived (unpublished)');
+        this.toast.success('Tour archived');
       },
     });
   }
